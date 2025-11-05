@@ -5,6 +5,7 @@ function autoPublishPosts() {
   
   console.log(`📅 Найдено постов на сегодня: ${posts.length}`);
   
+  // Обрабатываем каждый пост для публикации
   posts.forEach(post => {
     try {
       const mediaContent = post.row[post.colIndex.media] || '';
@@ -21,6 +22,7 @@ function autoPublishPosts() {
       
       console.log(`🔄 Публикую пост с ${mediaUrls.length} медиафайлами`);
       
+      // Отправляем пост в Telegram
       sendToTelegram(postData);
       updatePostStatus(post.rowIndex, 'Опубликован');
       published++;

@@ -1,10 +1,4 @@
-/**
- * Преобразует Google Drive ссылку в прямую ссылку для скачивания
- * Поддерживает форматы:
- * - https://drive.google.com/file/d/FILE_ID/view?usp=sharing
- * - https://drive.google.com/open?id=FILE_ID
- * - FILE_ID (только ID файла)
- */
+// Извлечение ID файла из различных форматов Google Drive ссылок
 function extractFileIdFromUrl(url) {
   if (!url) return null;
   
@@ -17,6 +11,7 @@ function extractFileIdFromUrl(url) {
   const match3 = url.match(/\/uc\?id=([a-zA-Z0-9_-]+)/);
   if (match3) return match3[1];
   
+  // Если передан чистый ID файла
   if (url.length >= 10 && url.length <= 50 && /^[a-zA-Z0-9_-]+$/.test(url)) {
     return url;
   }
@@ -24,6 +19,7 @@ function extractFileIdFromUrl(url) {
   return null;
 }
 
+// Проверка, является ли ссылка Google Drive ссылкой
 function isGoogleDriveUrl(url) {
   if (!url) return false;
   
@@ -31,6 +27,7 @@ function isGoogleDriveUrl(url) {
          (url.length >= 10 && url.length <= 50 && /^[a-zA-Z0-9_-]+$/.test(url));
 }
 
+// Получение MIME-типа файла из Google Drive
 function getDriveFileMimeType(fileId) {
   try {
     const file = DriveApp.getFileById(fileId);

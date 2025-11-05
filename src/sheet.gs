@@ -1,10 +1,12 @@
+// Собрать посты для публикации на сегодня
 function getPostsToPublish() {
   const sheet = SpreadsheetApp.openById(CONFIG.SHEET_ID).getSheetByName(CONFIG.SHEET_NAME);
   const data = sheet.getDataRange().getValues();
   
-  const headers = data[1];
-  const postsData = data.slice(2);
+  const headers = data[1]; // Заголовки находятся во второй строке
+  const postsData = data.slice(2); // Данные начинаются с третьей строки
   
+  // Определяем индексы колонок
   const colIndex = {
     title: headers.indexOf('Title'),
     content: headers.indexOf('Content'),
@@ -16,10 +18,11 @@ function getPostsToPublish() {
   
   const today = new Date().toDateString();
   
+  // Фильтруем посты: неопубликованные и с сегодняшней датой
   return postsData
     .map((row, index) => ({ 
       row, 
-      rowIndex: index + 2,
+      rowIndex: index + 2, // +2 потому что данные начинаются с 3-й строки
       colIndex 
     }))
     .filter(({ row, colIndex }) => {
@@ -29,6 +32,7 @@ function getPostsToPublish() {
     });
 }
 
+// Обновление статуса опубликованных постов
 function updatePostStatus(rowIndex, status, error = '') {
   const sheet = SpreadsheetApp.openById(CONFIG.SHEET_ID).getSheetByName(CONFIG.SHEET_NAME);
   const data = sheet.getDataRange().getValues();
@@ -40,7 +44,8 @@ function updatePostStatus(rowIndex, status, error = '') {
   
   if (status === 'Опубликован') {
     sheet.getRange(rowIndex + 1, statusCol).setValue('Опубликован');
-    sheet.getRange(rowIndex + 1, dateCol).setValue(new Date());
+    sheet.getRange(rowIndex + 1, dateCol).setNumberFormat('dd.MM.yyyy HH:mm:ss'); // Установка формата времени
+    sheet.getRange(rowIndex + 1, dateCol).setValue(new Date()); // Записываем текущее время публикации
     sheet.getRange(rowIndex + 1, errorCol).clearContent();
   } else {
     sheet.getRange(rowIndex + 1, statusCol).setValue('Ошибка');

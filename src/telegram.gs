@@ -1,3 +1,4 @@
+// Основная функция отправки поста в Telegram
 function sendToTelegram(postData) {
   let mediaUrls = postData.mediaUrls;
   let mediaFiles = [];
@@ -8,11 +9,13 @@ function sendToTelegram(postData) {
     hashtags: postData.hashtags
   });
   
+  // Обрабатываем медиафайлы
   if (mediaUrls && mediaUrls.length > 0) {
     mediaUrls.forEach((url, index) => {
       if (url && url.trim()) {
         try {
           if (isGoogleDriveUrl(url)) {
+            // Загружаем файл из Google Drive
             const fileId = extractFileIdFromUrl(url);
             const file = DriveApp.getFileById(fileId);
             const blob = file.getBlob();
@@ -24,6 +27,7 @@ function sendToTelegram(postData) {
             });
             console.log(`📁 Файл ${index + 1} загружен: ${file.getName()} (${mediaType})`);
           } else {
+            // Используем прямую ссылку на файл
             const mediaType = getMediaType(url);
             mediaFiles.push({
               blob: null,
@@ -38,8 +42,10 @@ function sendToTelegram(postData) {
     });
   }
   
+  // Форматируем текст поста
   let text = escapeMarkdown(postData.content);
   
+  // Добавляем хештеги
   if (postData.hashtags) {
     const tags = postData.hashtags.split(',')
       .map(tag => tag.trim())
@@ -49,14 +55,16 @@ function sendToTelegram(postData) {
     if (tags) text += `\n\n${tags}`;
   }
   
+  // Выбираем метод отправки в зависимости от количества файлов
   if (mediaFiles.length > 1) {
-    return sendMediaGroup(mediaFiles, text);
+    return sendMediaGroup(mediaFiles, text); // Отправляем медиагруппу
   }
   else if (mediaFiles.length === 1) {
     const media = mediaFiles[0];
     if (media.blob) {
-      return sendMediaFile(media.blob, media.mediaType, text);
+      return sendMediaFile(media.blob, media.mediaType, text); // Отправляем файл из Google Drive
     } else {
+      // Отправляем по ссылке
       const method = { 
         photo: 'sendPhoto', 
         video: 'sendVideo', 
@@ -74,6 +82,7 @@ function sendToTelegram(postData) {
     }
   }
   
+  // Отправляем только текст
   const payload = {
     chat_id: CONFIG.TELEGRAM_CHANNEL_ID,
     text: text,
@@ -82,7 +91,7 @@ function sendToTelegram(postData) {
   return makeTelegramRequest('sendMessage', payload);
 }
 
-// Отправление одного медиа
+// Отправление одного медиафайла
 function sendMediaFile(fileBlob, mediaType, caption) {
   const method = { 
     photo: 'sendPhoto', 
@@ -128,7 +137,7 @@ function sendMediaFile(fileBlob, mediaType, caption) {
   }
 }
 
-// Отправление нескольких медиа
+// Отправление нескольких медиафайлов в одном сообщении
 function sendMediaGroup(mediaFiles, caption) {
   const url = `https://api.telegram.org/bot${CONFIG.TELEGRAM_BOT_TOKEN}/sendMediaGroup`;
   
@@ -137,11 +146,12 @@ function sendMediaGroup(mediaFiles, caption) {
     chat_id: CONFIG.TELEGRAM_CHANNEL_ID
   };
   
+  // Формируем массив медиа для отправки
   mediaFiles.forEach((media, index) => {
     const mediaItem = {
       type: media.mediaType,
       media: `attach://file${index}`,
-      caption: index === 0 ? caption : ''
+      caption: index === 0 ? caption : '' // Подпись только к первому файлу
     };
     mediaPayload.push(mediaItem);
     
@@ -183,6 +193,7 @@ function sendMediaGroup(mediaFiles, caption) {
   }
 }
 
+// Базовый запрос к Telegram API
 function makeTelegramRequest(method, payload) {
   const url = `https://api.telegram.org/bot${CONFIG.TELEGRAM_BOT_TOKEN}/${method}`;
   
