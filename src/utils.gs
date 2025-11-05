@@ -27,5 +27,5 @@ function getMediaTypeFromMime(mimeType) {
 }
 
 function escapeMarkdown(text) {
-  return text ? text.replace(/[_*[\]()~`>+\-=|{}.!]/g, '\\$&') : '';
+  return text ? text.replace(/[_*[\]()~`>+\-=|{}!]/g, '\\$&') : '';
 }
