@@ -69,12 +69,12 @@
    ```bash
    # Перейдите в вашу Google Sheet > Расширения > Apps Script
    # Создайте 6 файлов в проекте:
-   - config.gs
-   - main.gs
-   - sheet.gs
-   - telegram.gs
-   - drive.gs
-   - utils.gs
+   - config.gs # Конфигурация
+   - main.gs # Точка входа
+   - sheet.gs # Взаимодеймтвие с Google Sheets
+   - telegram.gs # Работа с Telegram
+   - drive.gs # Работа с ссылками Google Drive
+   - utils.gs # Доп. Функционал
    # И скопируйте туда соответствующий код
    ```
 ### Настройка
