@@ -32,5 +32,5 @@ function getMediaTypeFromMime(mimeType) {
 
 // Экранирование специальных символов для Markdown
 function escapeMarkdown(text) {
-  return text ? text.replace(/[_*[\]()~`>+\-=|{}!]/g, '\\$&') : '';
+  return text ? text.replace(/[\[\]\*&_`]/g, '\\$&') : '';
 }
